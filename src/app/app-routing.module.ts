@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { EstadisticaComponent } from './ingreso-egreso/estadistica/estadistica.component';
 import { IngresoEgresoComponent } from './ingreso-egreso/ingreso-egreso.component';
 import { DetalleComponent } from './ingreso-egreso/detalle/detalle.component';
+import { AuthGuard } from './services/auth.guard';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
 
     { path:'', redirectTo:'dashboard', pathMatch:'full'},
     { path: 'dashboard', component: DashboardComponent, 
+        canActivate: [ AuthGuard ],
         children:[
             { path: '', component: EstadisticaComponent },
             { path: 'ingreso-egreso', component: IngresoEgresoComponent },
