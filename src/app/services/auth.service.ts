@@ -6,24 +6,48 @@ import { AngularFirestore } from '@angular/fire/firestore';
 
 import { map } from 'rxjs/operators';
 import { Usuario } from '../models/usuario.model';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app-reducer.module';
+import { setUser, unSetUser } from '../auth/auth.actions';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor( public auth: AngularFireAuth,
-              private firestore: AngularFirestore) { }
+  userSub:Subscription;
 
-  /*initAuthListener() {
+  private _user:Usuario;
+  constructor( public auth: AngularFireAuth,
+              private firestore: AngularFirestore,
+              private store:Store<AppState>) { }
+
+  get getUser(){
+    return this._user;
+  }
+
+  initAuthListener() {
 
     this.auth.authState.subscribe( fuser => {
       console.log( fuser );
-      console.log( fuser?.uid );
-      console.log( fuser?.email );
+
+      if(fuser){
+        this.userSub = this.firestore.doc(`${fuser.uid}/usuario`).valueChanges()
+        .subscribe((fbUser:any)=>{
+          this._user = fbUser;
+          const user = Usuario.fromFB(fbUser);
+          this.store.dispatch(setUser({user}));
+        })
+      }
+      else{
+        this._user = null;
+        this.store.dispatch(unSetUser());
+        if(this.userSub) this.userSub.unsubscribe();
+      }
     })
 
-  }*/
+  }
 
 
 
@@ -46,6 +70,7 @@ export class AuthService {
   }
 
   logout() {
+    this.store.dispatch(unSetUser());
     return this.auth.signOut();
   }
 

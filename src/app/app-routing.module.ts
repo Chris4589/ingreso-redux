@@ -20,7 +20,9 @@ const routes: Routes = [
     { path: 'register', component: RegisterComponent },
 
     { path:'', redirectTo:'dashboard', pathMatch:'full'},
-    { path: 'dashboard', component: DashboardComponent, 
+    { path: 'dashboard', 
+    
+        component: DashboardComponent, 
         canActivate: [ AuthGuard ],
         children:[
             { path: '', component: EstadisticaComponent },
